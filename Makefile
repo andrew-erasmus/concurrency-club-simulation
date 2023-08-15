@@ -1,12 +1,12 @@
-# Makefile for the Monte Carlo assignment program 
+# Makefile for the club simulation assignment program 
 # Andrew Erasmus
-# 25 April 2023
+# 15 August 2023
 
 JAVAC=/usr/bin/javac
 .SUFFIXES: .java .class
 SRCDIR=src
 BINDIR=bin
-PACKAGE=MonteCarloMini
+PACKAGE=clubSimulation
 
 # Locate all Java files under the package directory
 # and generate the list of class files to be compiled
@@ -24,6 +24,6 @@ clean:
 	rm -rf $(BINDIR)
 
 run: $(CLASS_FILES)
-	java -cp $(BINDIR) $(PACKAGE).MonteCarloMinimizationParallel $(ARGS)
+	java -cp $(BINDIR) $(PACKAGE).ClubSimulation $(ARGS)
 
 
