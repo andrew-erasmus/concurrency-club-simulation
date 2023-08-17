@@ -83,13 +83,20 @@ public class ClubSimulation {
 		// add the listener to the jbutton to handle the "pressed" event
 		pauseB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// THIS DOES NOTHING - MUST BE FIXED
-				if(pauseB.getText().equalsIgnoreCase("Pause")){
-					pauseB.setText("Resume");
-				}else{
-					pauseB.setText("Pause");
-				}
 				
+				synchronized (Clubgoer.pause) {
+					if (pauseB.getText().equalsIgnoreCase("Pause")) {
+						pauseB.setText("Resume");
+						Clubgoer.pause.set(true);
+						Clubgoer.pause.notifyAll();
+					} else {
+						pauseB.setText("Pause");
+						Clubgoer.pause.set(false);
+						Clubgoer.pause.notifyAll();
+					}
+
+				}
+
 			}
 		});
 
@@ -150,12 +157,11 @@ public class ClubSimulation {
 		Thread s = new Thread(counterDisplay);
 		s.start();
 
-		
 		for (int i = 0; i < noClubgoers; i++) {
 			patrons[i].start();
 
 		}
-		
+
 	}
 
 }

@@ -21,6 +21,7 @@ public class Clubgoer extends Thread {
 	private boolean inRoom;
 	private boolean thirsty;
 	private boolean wantToLeave;
+	public static AtomicBoolean pause = new AtomicBoolean(false);
 	
 	private int ID; //thread ID 
 
@@ -33,6 +34,7 @@ public class Clubgoer extends Thread {
 		thirsty=true; //thirsty when arrive
 		wantToLeave=false;	 //want to stay when arrive
 		rand=new Random();
+		
 	}
 	
 	//getter
@@ -53,11 +55,17 @@ public class Clubgoer extends Thread {
 
 	//check to see if user pressed pause button
 	private void checkPause() {
-		// THIS DOES NOTHING - MUST BE FIXED  	
+		 	
+		synchronized(pause){
+			while(pause.get()){
+				try {
+					pause.wait();
+				} catch (InterruptedException e) {}
+			}
+		}
         
     }
-	private void startSim() {
-		// THIS DOES NOTHING - MUST BE FIXED  	
+	private void startSim() { 	
 		try{
 			ClubSimulation.latch.await();
 		}catch(InterruptedException e){}
