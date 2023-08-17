@@ -84,6 +84,12 @@ public class ClubSimulation {
 		pauseB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// THIS DOES NOTHING - MUST BE FIXED
+				if(pauseB.getText().equalsIgnoreCase("Pause")){
+					pauseB.setText("Resume");
+				}else{
+					pauseB.setText("Pause");
+				}
+				
 			}
 		});
 
@@ -144,7 +150,7 @@ public class ClubSimulation {
 		Thread s = new Thread(counterDisplay);
 		s.start();
 
-		latch.await();
+		
 		for (int i = 0; i < noClubgoers; i++) {
 			patrons[i].start();
 

@@ -58,7 +58,10 @@ public class Clubgoer extends Thread {
     }
 	private void startSim() {
 		// THIS DOES NOTHING - MUST BE FIXED  	
-        
+		try{
+			ClubSimulation.latch.await();
+		}catch(InterruptedException e){}
+			
     }
 	
 	//get drink at bar
