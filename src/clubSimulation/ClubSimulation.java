@@ -88,7 +88,7 @@ public class ClubSimulation {
 					if (pauseB.getText().equalsIgnoreCase("Pause")) {
 						pauseB.setText("Resume");
 						Clubgoer.pause.set(true);
-						Clubgoer.pause.notifyAll();
+						//Clubgoer.pause.notifyAll();
 					} else {
 						pauseB.setText("Pause");
 						Clubgoer.pause.set(false);
