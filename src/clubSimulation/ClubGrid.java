@@ -71,11 +71,13 @@ public class ClubGrid {
 	}
 	
 	public GridBlock enterClub(PeopleLocation myLocation) throws InterruptedException  {
+		if(!ClubSimulation.tallys.overCapacity()){
 		counter.personArrived(); //add to counter of people waiting 
 		entrance.get(myLocation.getID());
 		counter.personEntered(); //add to counter
 		myLocation.setLocation(entrance);
 		myLocation.setInRoom(true);
+		}
 		return entrance;
 	}
 	
