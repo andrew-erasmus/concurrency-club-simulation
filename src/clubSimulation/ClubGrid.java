@@ -18,7 +18,6 @@ public class ClubGrid {
 	private final static int minY = 5;// minimum y dimension
 
 	private PeopleCounter counter;
-	static AtomicBoolean enter = new AtomicBoolean(false);
 
 	ClubGrid(int x, int y, int[] exitBlocks, PeopleCounter c) throws InterruptedException {
 		if (x < minX)
@@ -81,35 +80,21 @@ public class ClubGrid {
 	}
 
 	public GridBlock enterClub(PeopleLocation myLocation) throws InterruptedException {
-		counter.personArrived();
-		if (!counter.overCapacity()) {
-			//counter.personArrived(); // add to counter of people waiting
-			entrance.get(myLocation.getID());
+		synchronized (entrance) {
+			counter.personArrived();
+			if (counter.getInside() == counter.getMax()) {
+				try {
+					entrance.wait();
+				} catch (InterruptedException e) {
+				}
+
+			}
+			
 			counter.personEntered(); // add to counter
+			entrance.get(myLocation.getID());
 			myLocation.setLocation(entrance);
 			myLocation.setInRoom(true);
-		} else {
-			
-			// synchronized (enter) {
-			// 	while (enter.get()) {
-			// 		try {
-			// 			enter.wait();
-			// 		} catch (InterruptedException e) {
-			// 		}
-			// 	}
-			// 	enter.set(false);
-			// 	counter.personEntered(); // add to counter
-			// 	entrance.get(myLocation.getID());
-			// 	myLocation.setLocation(entrance);
-			// 	myLocation.setInRoom(true);
-			// }
-			// synchronized(entrance){
-			// counter.personArrived();
-			// entrance.wait();
-			// counter.personLeft();
-			// } //TODO: PUT IN QUEUE AND WHEN SOMEONE LEAVES THEY MUST COME IN
 		}
-
 		return entrance;
 	}
 
@@ -142,12 +127,11 @@ public class ClubGrid {
 	}
 
 	public void leaveClub(GridBlock currentBlock, PeopleLocation myLocation) {
-		synchronized (enter) { // TODO: Check if this synchronized is necessary
+		synchronized (entrance) { 
 			currentBlock.release();
 			counter.personLeft(); // add to counter
 			myLocation.setInRoom(false);
-			enter.set(true); // !! DOES NOT NOTIFY THREADS IN QUEUE
-			enter.notifyAll();
+			entrance.notify();
 		}
 	}
 
