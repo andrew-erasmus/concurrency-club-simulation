@@ -80,8 +80,8 @@ public class ClubGrid {
 	}
 
 	public GridBlock enterClub(PeopleLocation myLocation) throws InterruptedException {
+		counter.personArrived(); //MOVED OUTSIDE TO AVOID DEADLOCK
 		synchronized (entrance) {
-			counter.personArrived();
 			if (counter.getInside() == counter.getMax()) {
 				try {
 					entrance.wait();
@@ -89,12 +89,11 @@ public class ClubGrid {
 				}
 
 			}
-			
-			counter.personEntered(); // add to counter
-			entrance.get(myLocation.getID());
-			myLocation.setLocation(entrance);
-			myLocation.setInRoom(true);
 		}
+		counter.personEntered(); // add to counter
+		entrance.get(myLocation.getID());
+		myLocation.setLocation(entrance);
+		myLocation.setInRoom(true);
 		return entrance;
 	}
 
@@ -127,10 +126,10 @@ public class ClubGrid {
 	}
 
 	public void leaveClub(GridBlock currentBlock, PeopleLocation myLocation) {
-		synchronized (entrance) { 
-			currentBlock.release();
-			counter.personLeft(); // add to counter
-			myLocation.setInRoom(false);
+		currentBlock.release();
+		counter.personLeft(); // add to counter
+		myLocation.setInRoom(false);
+		synchronized (entrance) { //MOVED HERE TO AVOID DEADLOCK
 			entrance.notify();
 		}
 	}
