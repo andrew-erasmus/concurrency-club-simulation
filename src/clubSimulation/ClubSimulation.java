@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.CountDownLatch;
 
 public class ClubSimulation {
-	static int noClubgoers = 20;
+	static int noClubgoers = 10;
 	static int frameX = 400;
 	static int frameY = 500;
 	static int yLimit = 400;
