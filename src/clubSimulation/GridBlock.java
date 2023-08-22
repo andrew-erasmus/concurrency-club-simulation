@@ -24,34 +24,34 @@ public class GridBlock {
 		coords = new int [] {x,y};
 	}
 	
-	public  int getX() {return coords[0];}  
+	public synchronized int getX() {return coords[0];}  
 	
-	public  int getY() {return coords[1];}
+	public synchronized int getY() {return coords[1];}
 	
-	public  boolean get(int threadID) throws InterruptedException {
+	public synchronized boolean get(int threadID) throws InterruptedException {
 		if (isOccupied==threadID) return true; //thread Already in this block
 		if (isOccupied>=0) return false; //space is occupied
 		isOccupied=threadID;  //set ID to thread that had block
 		return true;
 	}
 		
-	public void release() {
+	public synchronized void release() {
 		isOccupied=-1;
 	}
 	
-	public  boolean occupied() {
+	public synchronized boolean occupied() {
 		if(isOccupied==-1) return false;
 		return true;
 	}
 	
-	public boolean isExit() {
+	public synchronized boolean isExit() {
 		return isExit;	
 	}
 
-	public   boolean isBar() {
+	public synchronized boolean isBar() {
 		return isBar;
 	}
-	public   boolean isDanceFloor() {
+	public synchronized boolean isDanceFloor() {
 		return isDance;
 	}
 

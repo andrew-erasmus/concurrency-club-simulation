@@ -14,6 +14,7 @@ public class ClubGrid {
 
 	private GridBlock exit;
 	private GridBlock entrance; // hard coded entrance
+	private GridBlock andreStart; // hard coded starting point for barman
 	private final static int minX = 5;// minimum x dimension
 	private final static int minY = 5;// minimum y dimension
 
@@ -30,6 +31,7 @@ public class ClubGrid {
 		Blocks = new GridBlock[x][y];
 		this.initGrid(exitBlocks);
 		entrance = Blocks[getMaxX() / 2][0];
+		andreStart = Blocks[getMaxX()/2][bar_y+1];
 		counter = c;
 	}
 
@@ -95,6 +97,42 @@ public class ClubGrid {
 		myLocation.setLocation(entrance);
 		myLocation.setInRoom(true);
 		return entrance;
+	}
+
+	//Entry method for Andre The Barman
+	public GridBlock enterAndre(PeopleLocation myLocation) throws InterruptedException {
+		//counter.personEntered(); // don't add to counter
+		//andreStart.get(myLocation.getID());
+		myLocation.setLocation(andreStart);
+		myLocation.setInRoom(true);
+		return andreStart;
+	}
+
+	//Method for movement for Andre
+	public GridBlock moveAndre(GridBlock currentBlock, int step_x, int step_y, PeopleLocation myLocation)
+			throws InterruptedException { // try to move in
+
+		int c_x = currentBlock.getX();
+		int c_y = currentBlock.getY();
+
+		int new_x = c_x + step_x; // new block x coordinates
+		int new_y = c_y + step_y; // new block y coordinates
+		//!! Will need a way to turn him around and go the other way -- maybe a boolean
+		if (!inPatronArea(new_x, new_y-1)) {
+			// Invalid move to outside - ignore
+			return currentBlock;
+		}
+		if ((new_x == currentBlock.getX()) && (new_y == currentBlock.getY())) // not actually moving
+			return currentBlock;
+
+		GridBlock newBlock = Blocks[new_x][new_y];
+
+		if (!newBlock.get(myLocation.getID()))
+			return currentBlock; // stay where you are
+
+		currentBlock.release(); // must release current block
+		myLocation.setLocation(newBlock);
+		return newBlock;
 	}
 
 	public GridBlock move(GridBlock currentBlock, int step_x, int step_y, PeopleLocation myLocation)

@@ -35,6 +35,7 @@ public class ClubSimulation {
 	private static int minWait = 500; // for the fastest cutomer
 
 	public static CountDownLatch latch = new CountDownLatch(1); // create latch for start
+	static PeopleLocation andreloc;
 
 	public static void setupGUI(int frameX, int frameY, int[] exits) {
 		// Frame initialize and dimensions
@@ -46,7 +47,7 @@ public class ClubSimulation {
 		g.setLayout(new BoxLayout(g, BoxLayout.PAGE_AXIS));
 		g.setSize(frameX, frameY);
 
-		clubView = new ClubView(peopleLocations, clubGrid, exits);
+		clubView = new ClubView(peopleLocations, clubGrid, exits, andreloc);
 		clubView.setSize(frameX, frameY);
 		g.add(clubView);
 
@@ -88,7 +89,6 @@ public class ClubSimulation {
 					if (pauseB.getText().equalsIgnoreCase("Pause")) {
 						pauseB.setText("Resume");
 						Clubgoer.pause.set(true);
-						//Clubgoer.pause.notifyAll();
 					} else {
 						pauseB.setText("Pause");
 						Clubgoer.pause.set(false);
@@ -138,11 +138,14 @@ public class ClubSimulation {
 																// people
 		Clubgoer.club = clubGrid; // grid shared with class
 
+		//!! Potentially increment by one to put Andre at the end
 		peopleLocations = new PeopleLocation[noClubgoers];
 		patrons = new Clubgoer[noClubgoers];
 
 		Random rand = new Random();
-
+		andreloc = new PeopleLocation(noClubgoers+1);
+		AndreBarman andre = new AndreBarman(noClubgoers+1, andreloc, 550);
+		andre.club=clubGrid;
 		for (int i = 0; i < noClubgoers; i++) {
 			peopleLocations[i] = new PeopleLocation(i);
 			int movingSpeed = (int) (Math.random() * (maxWait - minWait) + minWait); // range of speeds for customers
@@ -156,11 +159,14 @@ public class ClubSimulation {
 		// Start counter thread - for updating counters
 		Thread s = new Thread(counterDisplay);
 		s.start();
-
+		andre.start();
 		for (int i = 0; i < noClubgoers; i++) {
 			patrons[i].start();
 
 		}
+		
+		
+		
 
 	}
 
