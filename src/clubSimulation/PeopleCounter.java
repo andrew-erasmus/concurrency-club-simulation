@@ -14,28 +14,28 @@ public class PeopleCounter {
 		maxPeople=new AtomicInteger(max);
 	}
 		
-	public int getWaiting() {
+	synchronized public int getWaiting() {
 		return peopleOutSide.get();
 	}
 
-	public int getInside() {
+	synchronized public int getInside() {
 		return peopleInside.get();
 	}
 	
-	public int getTotal() {
+	synchronized public int getTotal() {
 		return (peopleOutSide.get()+peopleInside.get()+peopleLeft.get());
 	}
 
-	public int getLeft() {
+	synchronized public int getLeft() {
 		return peopleLeft.get();
 	}
 	
-	public int getMax() {
+	synchronized public int getMax() {
 		return maxPeople.get();
 	}
 	
 	//someone arrived outside
-	public void personArrived() {
+	synchronized public void personArrived() {
 		peopleOutSide.getAndIncrement();
 	}
 	
