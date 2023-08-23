@@ -1,6 +1,6 @@
 package clubSimulation;
 
-import java.util.concurrent.atomic.AtomicInteger;
+//import java.util.concurrent.atomic.AtomicInteger;
 
 // GridBlock class to represent a block in the club.
 // only one thread at a time "owns" a GridBlock

@@ -38,24 +38,21 @@ public class Clubgoer extends Thread {
 	}
 	
 	//getter
-	public  boolean inRoom() {
+	public boolean inRoom() {
 		return inRoom;
 	}
 	
 	//getter
-	public   int getX() { return currentBlock.getX();}	
+	public  int getX() { return currentBlock.getX();}	
 	
 	//getter
-	public   int getY() {	return currentBlock.getY();	}
+	public  int getY() {	return currentBlock.getY();	}
 	
 	//getter
-	public   int getSpeed() { return movingSpeed; }
-
-	//setter
+	public  int getSpeed() { return movingSpeed; }
 
 	//check to see if user pressed pause button
-	private void checkPause() {
-		 	
+	private void checkPause() { 	
 		synchronized(pause){
 			while(pause.get()){
 				try {
@@ -71,10 +68,13 @@ public class Clubgoer extends Thread {
 		}catch(InterruptedException e){}
 			
     }
+
+	
 	
 	//get drink at bar
 		private void getDrink() throws InterruptedException {
 			//TODO: FIX SO BARMAN GIVES THE DRINK AND IT IS NOT AUTOMATIC
+			// Have wait() until andre comes next to them and then notify that have been given drink
 			thirsty=false;
 			System.out.println("Thread "+this.ID + " got drink at bar position: " + currentBlock.getX()  + " " +currentBlock.getY() );
 			sleep(movingSpeed*5);  //wait a bit

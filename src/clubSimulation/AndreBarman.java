@@ -12,7 +12,6 @@ public class AndreBarman extends Thread {
 
     private PeopleLocation myLocation;
     private boolean inRoom;
-    public static AtomicBoolean pause = new AtomicBoolean(false);
 
     private int ID; // thread ID
 
@@ -50,10 +49,10 @@ public class AndreBarman extends Thread {
     // check to see if user pressed pause button
     private void checkPause() {
 
-        synchronized (pause) {
-            while (pause.get()) {
+        synchronized (Clubgoer.pause) {
+            while (Clubgoer.pause.get()) {
                 try {
-                    pause.wait();
+                    Clubgoer.pause.wait();
                 } catch (InterruptedException e) {
                 }
             }
@@ -69,15 +68,20 @@ public class AndreBarman extends Thread {
 
     }
 
-
     public void enterClub() throws InterruptedException {
         currentBlock = club.enterAndre(myLocation); // Start at starting point
         inRoom = true;
     }
 
-    private void serve() throws InterruptedException {
+    private void serve(Boolean reverse) throws InterruptedException {
         // MAKE SO THAT GOES ONLY BACK AND FORTH
-        int x_mv = rand.nextInt(3) - 1; // -1,0 or 1
+        int x_mv;
+        if (reverse == false) {
+            x_mv = 1;
+        }else{
+            x_mv= -1;
+        }
+
         int y_mv = 0;
         currentBlock = club.moveAndre(currentBlock, x_mv, y_mv, myLocation);
         sleep(movingSpeed);
@@ -87,21 +91,31 @@ public class AndreBarman extends Thread {
     public void run() {
         try {
             startSim();
-			checkPause();
-			myLocation.setArrived();
-			checkPause(); //check whether have been asked to pause
-           // inRoom = true;
-			enterClub();
+            checkPause();
+            myLocation.setArrived();
+            checkPause(); // check whether have been asked to pause
+            // inRoom = true;
+            enterClub();
+            checkPause();
+            int counter = 0;
+            int length = club.getMaxX();
+            Boolean reverse = false;
 
-           // while (inRoom) {
+            while (inRoom) {
                 // TODO: MAKE WANDER BACK AND FORTH TO SERVE DRINKS
-             //   serve();
-              //  System.out.println("mamama");
-           // }
+                if (counter == length) {
+                    reverse = !reverse;
+                    counter = 0;
+                }
+                serve(reverse);
+                checkPause();
+                counter++;
+
+            }
 
         } catch (InterruptedException e1) { // do nothing
         }
     }
-    //TODO: FIX ANDRE - DISCUSS HOW TO START
+    // TODO: FIX ANDRE - MAKE HIM PAUSE, SERVE DRINKINGS AND MOVE UP AND DOWN
 
 }
