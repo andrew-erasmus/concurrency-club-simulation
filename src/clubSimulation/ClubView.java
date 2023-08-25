@@ -25,10 +25,10 @@ public class ClubView extends JPanel implements Runnable {
 			this.maxY = grid.getMaxY();
 		    this.maxX= grid.getMaxX();
 		    int width = getWidth();
-			this.barpersonLocation = andre;
 		    int height = getHeight();
 		    wIncr= width/(maxX+2); //1 space on either side
 		    hIncr= height/(maxY+2);//2 spaces on bottom
+			this.barpersonLocation = andre; //andre's location in the grid
 		}
 		
 		public void paintComponent(Graphics g) {
@@ -80,6 +80,7 @@ public class ClubView extends JPanel implements Runnable {
 			 g.setFont(new Font("Helvetica", Font.BOLD, hIncr/2));
 			 
 			 //barman should go here
+			 //paints andre on the grid
 			 if (barpersonLocation.inRoom()) {
 				g.setColor(barpersonLocation.getColor());
 				x= (barpersonLocation.getX()+1)*wIncr;

@@ -34,8 +34,8 @@ public class ClubSimulation {
 	private static int maxWait = 1200; // for the slowest customer
 	private static int minWait = 500; // for the fastest cutomer
 
-	public static CountDownLatch latch = new CountDownLatch(1); // create latch for start
-	static PeopleLocation andreloc;
+	public static CountDownLatch latch = new CountDownLatch(1); // create latch for start, countdown when start button is pressed
+	static PeopleLocation andreloc; //the location of andre
 
 	public static void setupGUI(int frameX, int frameY, int[] exits) {
 		// Frame initialize and dimensions
@@ -70,29 +70,28 @@ public class ClubSimulation {
 		b.setLayout(new BoxLayout(b, BoxLayout.LINE_AXIS));
 		JButton startB = new JButton("Start");
 
-		// add the listener to the jbutton to handle the "pressed" event
+		// add the listener to the jbutton to handle the "pressed" event for the start button
 		startB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// THIS DOES NOTHING - MUST BE FIXED
-				latch.countDown();
+				latch.countDown(); //allows threads to start
 			}
 		});
 
 		final JButton pauseB = new JButton("Pause ");
 		;
 
-		// add the listener to the jbutton to handle the "pressed" event
+		// add the listener to the jbutton to handle the "pressed" event for the pause button
 		pauseB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				synchronized (Clubgoer.pause) {
+				synchronized (Clubgoer.pause) { //lock on the pause atomic boolean
 					if (pauseB.getText().equalsIgnoreCase("Pause")) {
-						pauseB.setText("Resume");
-						Clubgoer.pause.set(true);
+						pauseB.setText("Resume"); //set it to display resume
+						Clubgoer.pause.set(true); //set the paused boolean to true to make threads start waiting
 					} else {
-						pauseB.setText("Pause");
+						pauseB.setText("Pause"); 
 						Clubgoer.pause.set(false);
-						Clubgoer.pause.notifyAll();
+						Clubgoer.pause.notifyAll(); //tells the paused threads to begin moving again
 					}
 
 				}
@@ -143,9 +142,9 @@ public class ClubSimulation {
 		patrons = new Clubgoer[noClubgoers];
 
 		Random rand = new Random();
-		andreloc = new PeopleLocation(noClubgoers + 1);
-		AndreBarman andre = new AndreBarman(noClubgoers + 1, andreloc, 750);
-		AndreBarman.club = clubGrid;
+		andreloc = new PeopleLocation(noClubgoers + 1); //sets andre to the last location
+		AndreBarman andre = new AndreBarman(noClubgoers + 1, andreloc, 750); //  create andre the barman
+		AndreBarman.club = clubGrid; //give andre the shared grid
 
 		for (int i = 0; i < noClubgoers; i++) {
 			peopleLocations[i] = new PeopleLocation(i);
@@ -160,7 +159,7 @@ public class ClubSimulation {
 		// Start counter thread - for updating counters
 		Thread s = new Thread(counterDisplay);
 		s.start();
-		andre.start();
+		andre.start(); //start andre's thread
 		for (int i = 0; i < noClubgoers; i++) {
 			patrons[i].start();
 

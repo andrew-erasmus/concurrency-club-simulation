@@ -3,6 +3,7 @@ package clubSimulation;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+//Class for Andre the barman
 public class AndreBarman extends Thread {
     public static ClubGrid club; // shared club
 
@@ -10,7 +11,7 @@ public class AndreBarman extends Thread {
     private Random rand;
     private int movingSpeed;
 
-    private PeopleLocation myLocation;
+    private PeopleLocation myLocation; 
     private boolean inRoom;
 
     private int ID; // thread ID
@@ -49,10 +50,10 @@ public class AndreBarman extends Thread {
     // check to see if user pressed pause button
     private void checkPause() {
 
-        synchronized (Clubgoer.pause) {
-            while (Clubgoer.pause.get()) {
+        synchronized (Clubgoer.pause) { //lock on the clubgoer pause
+            while (Clubgoer.pause.get()) { //when the user pressed pause
                 try {
-                    Clubgoer.pause.wait();
+                    Clubgoer.pause.wait(); //wait until the user presses resume
                 } catch (InterruptedException e) {
                 }
             }
@@ -60,9 +61,9 @@ public class AndreBarman extends Thread {
 
     }
 
-    private void startSim() {
+    private void startSim() { 
         try {
-            ClubSimulation.latch.await();
+            ClubSimulation.latch.await(); //wait until the latch open
         } catch (InterruptedException e) {
         }
 
@@ -73,24 +74,24 @@ public class AndreBarman extends Thread {
         inRoom = true;
     }
 
-    private void serve(Boolean reverse) throws InterruptedException {
-        // MAKE SO THAT GOES ONLY BACK AND FORTH
+    private void serve(Boolean reverse) throws InterruptedException { //serve patrons drinks
+        
         int x_mv;
         if (reverse == false) {
-            x_mv = 1;
+            x_mv = 1; //make the barman move right
         }else{
-            x_mv= -1;
+            x_mv= -1; //make the barman move left
         }
 
-        int y_mv = 0;
-        currentBlock = club.moveAndre(currentBlock, x_mv, y_mv, myLocation);
+        int y_mv = 0; //make the barman stay at the same y level
+        currentBlock = club.moveAndre(currentBlock, x_mv, y_mv, myLocation); //make the thread move
         sleep(movingSpeed);
 
-        synchronized(Clubgoer.served){
-            GridBlock patronBlock = Clubgoer.club.whichBlock(currentBlock.getX(),currentBlock.getY()-1);
-            if(patronBlock.occupied()){
-                Clubgoer.served.notify();
-                Clubgoer.served.set(true);
+        synchronized(Clubgoer.served){ //lock on the served atomic boolean
+            GridBlock patronBlock = Clubgoer.club.whichBlock(currentBlock.getX(),currentBlock.getY()-1); //gets the block above andre at the bar
+            if(patronBlock.occupied()){ //checks if there is a patron waiting to be served
+                Clubgoer.served.notify(); //tell the thread that they have been served by Andre
+                Clubgoer.served.set(true); //set the served boolean to true
                 sleep(movingSpeed);
             }
         }
@@ -106,17 +107,17 @@ public class AndreBarman extends Thread {
             enterClub();
             checkPause();
 
-            int counter = 0;
-            int length = club.getMaxX();
-            Boolean reverse = false;
+            int counter = 0; //counts how many times andre has moved in the grid
+            int length = club.getMaxX(); //the length of the club's width
+            Boolean reverse = false; //tells andre whether to move backwards or forwards
 
             while (inRoom) {
                 
-                if (counter == length) {
-                    reverse = !reverse;
+                if (counter == length) { //if andre is at the edge of the grid
+                    reverse = !reverse; //reverse his movement direction
                     counter = 0;
                 }
-                serve(reverse);
+                serve(reverse); //serve the patron
                 sleep(movingSpeed/5);
                 checkPause();
                 counter++;

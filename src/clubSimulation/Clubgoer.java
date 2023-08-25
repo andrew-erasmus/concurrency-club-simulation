@@ -21,8 +21,8 @@ public class Clubgoer extends Thread {
 	private boolean inRoom;
 	private boolean thirsty;
 	private boolean wantToLeave;
-	public static AtomicBoolean pause = new AtomicBoolean(false);
-	public static AtomicBoolean served = new AtomicBoolean(false);
+	public static AtomicBoolean pause = new AtomicBoolean(false); //should the patron wait
+	public static AtomicBoolean served = new AtomicBoolean(false); //has the patron been served
 
 	private int ID; // thread ID
 
@@ -58,11 +58,11 @@ public class Clubgoer extends Thread {
 	}
 
 	// check to see if user pressed pause button
-	private void checkPause() {
-		synchronized (pause) {
-			while (pause.get()) {
+	private void checkPause(){
+		synchronized (pause) { //lock on the pause atomic boolean
+			while (pause.get()) { // while the simulation says patrons must pause
 				try {
-					pause.wait();
+					pause.wait(); // tells the threads to wait until the button is pressed again
 				} catch (InterruptedException e) {
 				}
 			}
@@ -70,9 +70,9 @@ public class Clubgoer extends Thread {
 
 	}
 
-	private void startSim() {
+	private void startSim() { //method to run when the simulation begins
 		try {
-			ClubSimulation.latch.await();
+			ClubSimulation.latch.await(); // wait for the latch to open when the user presses the start
 		} catch (InterruptedException e) {
 		}
 
@@ -81,13 +81,13 @@ public class Clubgoer extends Thread {
 	// get drink at bar
 	private void getDrink() throws InterruptedException {
 
-		// Have wait() until andre comes next to them and then notify that have been
-		// given drink
+		// Patrons wait until andre comes next to them 
+		// and then they get notified when they have been served
 		
-		synchronized(served){
+		synchronized(served){ //lock on the served atomic boolean which is changed by Andre
 			try{
-				if(served.get() == false){
-					served.wait();
+				if(served.get() == false){ //if they have not been served
+					served.wait(); //wait until Andre notifies them
 				}
 			}catch(InterruptedException e){}
 		}
@@ -95,7 +95,7 @@ public class Clubgoer extends Thread {
 		served.set(false);
 		System.out.println(
 				"Thread " + this.ID + " got drink at bar position: " + currentBlock.getX() + " " + currentBlock.getY()+" from Andre the Barman");
-		//sleep(movingSpeed * 5); // wait a bit
+		
 	}
 
 	// --------------------------------------------------------

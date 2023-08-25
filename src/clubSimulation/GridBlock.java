@@ -35,11 +35,11 @@ public class GridBlock {
 		return true;
 	}
 		
-	public synchronized void release() {
+	public synchronized void release() { //releases the current block so another thread can enter
 		isOccupied=-1;
 	}
 	
-	public synchronized boolean occupied() {
+	public synchronized boolean occupied() { //checks if the current block is occupied
 		if(isOccupied==-1) return false;
 		return true;
 	}
