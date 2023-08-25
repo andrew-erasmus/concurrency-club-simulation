@@ -138,14 +138,15 @@ public class ClubSimulation {
 																// people
 		Clubgoer.club = clubGrid; // grid shared with class
 
-		// !! Potentially increment by one to put Andre at the end
+		
 		peopleLocations = new PeopleLocation[noClubgoers];
 		patrons = new Clubgoer[noClubgoers];
 
 		Random rand = new Random();
 		andreloc = new PeopleLocation(noClubgoers + 1);
-		AndreBarman andre = new AndreBarman(noClubgoers + 1, andreloc, 550);
-		andre.club = clubGrid;
+		AndreBarman andre = new AndreBarman(noClubgoers + 1, andreloc, 750);
+		AndreBarman.club = clubGrid;
+
 		for (int i = 0; i < noClubgoers; i++) {
 			peopleLocations[i] = new PeopleLocation(i);
 			int movingSpeed = (int) (Math.random() * (maxWait - minWait) + minWait); // range of speeds for customers

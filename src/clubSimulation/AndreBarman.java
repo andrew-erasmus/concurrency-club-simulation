@@ -86,6 +86,15 @@ public class AndreBarman extends Thread {
         currentBlock = club.moveAndre(currentBlock, x_mv, y_mv, myLocation);
         sleep(movingSpeed);
 
+        synchronized(Clubgoer.served){
+            GridBlock patronBlock = Clubgoer.club.whichBlock(currentBlock.getX(),currentBlock.getY()-1);
+            if(patronBlock.occupied()){
+                Clubgoer.served.notify();
+                Clubgoer.served.set(true);
+                sleep(movingSpeed);
+            }
+        }
+
     }
 
     public void run() {
@@ -94,20 +103,21 @@ public class AndreBarman extends Thread {
             checkPause();
             myLocation.setArrived();
             checkPause(); // check whether have been asked to pause
-            // inRoom = true;
             enterClub();
             checkPause();
+
             int counter = 0;
             int length = club.getMaxX();
             Boolean reverse = false;
 
             while (inRoom) {
-                // TODO: MAKE WANDER BACK AND FORTH TO SERVE DRINKS
+                
                 if (counter == length) {
                     reverse = !reverse;
                     counter = 0;
                 }
                 serve(reverse);
+                sleep(movingSpeed/5);
                 checkPause();
                 counter++;
 
@@ -116,6 +126,5 @@ public class AndreBarman extends Thread {
         } catch (InterruptedException e1) { // do nothing
         }
     }
-    // TODO: FIX ANDRE - MAKE HIM PAUSE, SERVE DRINKINGS AND MOVE UP AND DOWN
 
 }

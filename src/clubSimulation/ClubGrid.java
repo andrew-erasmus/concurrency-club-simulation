@@ -18,7 +18,7 @@ public class ClubGrid {
 	private final static int minX = 5;// minimum x dimension
 	private final static int minY = 5;// minimum y dimension
 
-	private PeopleCounter counter;
+	private PeopleCounter counter; //The number of patrons currently in the grid
 
 	ClubGrid(int x, int y, int[] exitBlocks, PeopleCounter c) throws InterruptedException {
 		if (x < minX)
@@ -31,7 +31,7 @@ public class ClubGrid {
 		Blocks = new GridBlock[x][y];
 		this.initGrid(exitBlocks);
 		entrance = Blocks[getMaxX() / 2][0];
-		andreStart = Blocks[0][bar_y+1];
+		andreStart = Blocks[0][bar_y+1]; // Start andre at bottom left of grid (in the bar)
 		counter = c;
 	}
 
@@ -85,15 +85,15 @@ public class ClubGrid {
 		counter.personArrived(); //Moved outside to avoid deadlock
 
 		synchronized (entrance) {
-			if (counter.getInside() == counter.getMax() || entrance.occupied()) {
+			if (counter.getInside() == counter.getMax() || entrance.occupied()) { //If the club is full or if the entrance is blocked
 				try {
-					entrance.wait();
+					entrance.wait(); //Wait until patron can move in
 				} catch (InterruptedException e) {
 				}
 
 			}
 		}
-		counter.personEntered(); // add to counter
+		counter.personEntered(); // add to counter 
 		entrance.get(myLocation.getID());
 		myLocation.setLocation(entrance);
 		myLocation.setInRoom(true);
@@ -102,14 +102,13 @@ public class ClubGrid {
 
 	//Entry method for Andre The Barman
 	public GridBlock enterAndre(PeopleLocation myLocation) throws InterruptedException {
-		//counter.personEntered(); // don't add to counter
-		//andreStart.get(myLocation.getID());
-		myLocation.setLocation(andreStart);
+		//Don't add to the counter since he is not a patron
+		myLocation.setLocation(andreStart); //Starts Andre in the bar
 		myLocation.setInRoom(true);
 		return andreStart;
 	}
 
-	
+	//Allows all patrons to move
 	public GridBlock move(GridBlock currentBlock, int step_x, int step_y, PeopleLocation myLocation)
 	throws InterruptedException { // try to move in
 		
@@ -138,7 +137,7 @@ public class ClubGrid {
 		return newBlock;
 	}
 	
-	//Method for movement for Andre
+	//Method for movement for Andre the barman
 	public GridBlock moveAndre(GridBlock currentBlock, int step_x, int step_y, PeopleLocation myLocation)
 			throws InterruptedException { // try to move in
 
@@ -147,7 +146,7 @@ public class ClubGrid {
 
 		int new_x = c_x + step_x; // new block x coordinates
 		int new_y = c_y + step_y; // new block y coordinates
-		//!! Will need a way to turn him around and go the other way -- maybe a boolean
+		
 		if (!inPatronArea(new_x, new_y-1)) {
 			// Invalid move to outside - ignore
 			return currentBlock;
@@ -165,12 +164,13 @@ public class ClubGrid {
 		return newBlock;
 	}
 	
+	//Allows patrons to leave club
 	public void leaveClub(GridBlock currentBlock, PeopleLocation myLocation) {
 		currentBlock.release();
 		counter.personLeft(); // add to counter
 		myLocation.setInRoom(false);
-		synchronized (entrance) { //MOVED HERE TO AVOID DEADLOCK
-			entrance.notify();
+		synchronized (entrance) { //Avoids deadlock
+			entrance.notify(); //Notify first waiting thread there is space in the club 
 		}
 	}
 
